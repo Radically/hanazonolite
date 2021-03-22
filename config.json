@@ -1,0 +1,19 @@
+{
+  "blocks": {
+    "test": {
+      "prefix": "HanaMinModLiteTest",
+      "unicode_ranges": [
+        ["89D0", "89D9"],
+        ["9AA8", "9AA9"],
+        ["2E5D9", "2E5D9"]
+      ]
+    },
+    "A": {
+      "prefix": "HanaMinModLiteA",
+      "unicode_ranges": [
+        ["0000", "D7FF"],
+        ["E000", "FFFD"]
+      ]
+    }
+  }
+}

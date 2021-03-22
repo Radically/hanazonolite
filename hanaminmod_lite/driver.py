@@ -3,6 +3,8 @@ import json
 import re
 import functools
 
+from .constants import *
+
 LOCALES = {
     "g": {"tla": "ZHS", "suffix": "SC"},
     "t": {"tla": "ZHT", "suffix": "TC"},
@@ -51,14 +53,14 @@ def build_canonical_name_map(unicode_ranges, name_data_map):
 
 
 def generateSVGFont(
-    prefix, locale, to_encode_list, glyphwiki_to_svg, no_corresponding_unicode_list
+    prefix, locale, to_encode_list, no_corresponding_unicode_list, glyphwiki_to_svg
 ):
-    font_family = f"{prefix} {LOCALES[locale]['suffix']}"
+    font_family = f"{prefix}{LOCALES[locale]['suffix']}"
     f = open(f"{font_family}.svg", "w")
     f.write(
         f"""<font horiz-adv-x="1000">
 <font-face font-family="{font_family}" units-per-em="1000" ascent="800" descent="120"/>
-<missing-glyph/>
+<missing-glyph />
 """
     )
 
@@ -70,11 +72,46 @@ def generateSVGFont(
     f.write("</font>\n")
     f.close()
 
+def generateCidMap(
+    prefix, locale, to_encode_list, no_corresponding_unicode_list
+):
+    font_family = f"{prefix}{LOCALES[locale]['suffix']}"
+    f = open(f"{font_family}.cidmap", "w")
+    f.write("mergeFonts\n")
+    f.write("0 .notdef\n")
+
+    combined_list = to_encode_list + no_corresponding_unicode_list
+    for i in range(len(combined_list)):
+        f.write(
+            f"""{i+1} {combined_list[i]}\n"""
+        )
+    f.close()
+
+
+
+def generateCidInfo(prefix, full_name, locale):
+    # Hanazono Mincho A Regular
+    with open("./config.json") as f:
+        config = json.load(f)
+    f.close()
+
+    font_family = f"{prefix}{LOCALES[locale]['suffix']}"
+    f = open(f"{font_family}.cidinfo", "w")
+    f.write(
+        CIDINFO_TEMPLATE.format(
+            FontName=font_family,
+            FullName=f"{full_name} {LOCALES[locale]['suffix']} Regular",
+            FamilyName=config["family_name"],
+        )
+    )
+    f.close()
+
 
 def process(block, name_data_map, gensvg_output, locale):
     # print(name_data_map["u8e39"])
 
     prefix = block["prefix"]
+    full_name = block["full_name"]
     canonical_name_map = build_canonical_name_map(
         block["unicode_ranges"], name_data_map
     )
@@ -152,8 +189,12 @@ def process(block, name_data_map, gensvg_output, locale):
     f.close()
 
     generateSVGFont(
-        prefix, locale, to_encode_list, glyphwiki_to_svg, no_corresponding_unicode_list
+        prefix, locale, to_encode_list, no_corresponding_unicode_list, glyphwiki_to_svg
     )
+
+    generateCidMap(prefix, locale, to_encode_list, no_corresponding_unicode_list)
+
+    generateCidInfo(prefix, full_name, locale)
 
 
 def cli(args=None):
@@ -162,6 +203,7 @@ def cli(args=None):
     # print(args.dump_newest_only)
     with open("./config.json") as f:
         config = json.load(f)
+    f.close()
 
     name_data_map = {}
     i = 0

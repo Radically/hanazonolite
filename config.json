@@ -1,7 +1,9 @@
 {
+  "family_name": "Hanazono Mincho Mod Lite",
   "blocks": {
     "test": {
       "prefix": "HanaMinModLiteTest",
+      "full_name": "Hanazono Mincho Mod Lite Test",
       "unicode_ranges": [
         ["89D0", "89D9"],
         ["9AA8", "9AA9"],
@@ -10,6 +12,7 @@
     },
     "A": {
       "prefix": "HanaMinModLiteA",
+      "full_name": "Hanazono Mincho Mod Lite A",
       "unicode_ranges": [
         ["0000", "D7FF"],
         ["E000", "FFFD"]

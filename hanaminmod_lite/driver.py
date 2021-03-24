@@ -4,20 +4,17 @@ import re
 import functools
 
 from .constants import *
-
-LOCALES = {
-    "g": {"tla": "ZHS", "suffix": "SC"},
-    "t": {"tla": "ZHT", "suffix": "TC"},
-    "h": {"tla": "ZHH", "suffix": "HK"},
-    "j": {"tla": "JAN", "suffix": "JP"},
-    "k": {"tla": "KOR", "suffix": "KR"},
-    "v": {"tla": "VIE", "suffix": "VN"},
-}
+from .generateCmap import generateCmap
+from .generateFeatures import generateFeatures
+from .generatePFADump import generatePFADump
+from .generateRaw import generateRaw
+from .generateOTF import generateOTF
 
 parser = argparse.ArgumentParser()
 # subparsers = parser.add_subparsers()
 parser.add_argument("dump_newest_only", help="Path to dump_newest_only.txt")
 parser.add_argument("gensvg_output", help="Path to gensvg_output.txt")
+parser.add_argument("adobe_perl_scripts", help="Path to Adobe perl scripts")
 parser.add_argument("locale", help="g, t, h, j, k, or v")
 
 
@@ -30,7 +27,7 @@ def build_canonical_name_map(unicode_ranges, name_data_map):
         if _hex not in name_data_map:
             return None
         data = name_data_map[_hex]
-        while re.search("99:0:0:0:0:200:200:u[a-f0-9]+(-[gthjkv])?\Z", data):
+        while re.search("^99:0:0:0:0:200:200:u[a-f0-9]+(-[gthjkv])?\Z", data):
             alias = data[len("99:0:0:0:0:200:200:") :]
             data = name_data_map[alias]
         return alias
@@ -59,7 +56,7 @@ def generateSVGFont(
     f = open(f"{font_family}.svg", "w")
     f.write(
         f"""<font horiz-adv-x="1000">
-<font-face font-family="{font_family}" units-per-em="1000" ascent="800" descent="120"/>
+<font-face font-family="{font_family}" units-per-em="1000" ascent="1000" descent="0"/>
 <missing-glyph />
 """
     )
@@ -72,9 +69,8 @@ def generateSVGFont(
     f.write("</font>\n")
     f.close()
 
-def generateCidMap(
-    prefix, locale, to_encode_list, no_corresponding_unicode_list
-):
+
+def generateCidMap(prefix, locale, to_encode_list, no_corresponding_unicode_list):
     font_family = f"{prefix}{LOCALES[locale]['suffix']}"
     f = open(f"{font_family}.cidmap", "w")
     f.write("mergeFonts\n")
@@ -82,11 +78,8 @@ def generateCidMap(
 
     combined_list = to_encode_list + no_corresponding_unicode_list
     for i in range(len(combined_list)):
-        f.write(
-            f"""{i+1} {combined_list[i]}\n"""
-        )
+        f.write(f"""{i+1} {combined_list[i]}\n""")
     f.close()
-
 
 
 def generateCidInfo(prefix, full_name, locale):
@@ -98,16 +91,16 @@ def generateCidInfo(prefix, full_name, locale):
     font_family = f"{prefix}{LOCALES[locale]['suffix']}"
     f = open(f"{font_family}.cidinfo", "w")
     f.write(
-        CIDINFO_TEMPLATE.format(
-            FontName=font_family,
-            FullName=f"{full_name} {LOCALES[locale]['suffix']} Regular",
-            FamilyName=config["family_name"],
+        CIDINFO_TEMPLATE(
+            font_family,
+            f"{full_name} {LOCALES[locale]['suffix']} Regular",
+            config["family_name"],
         )
     )
     f.close()
 
 
-def process(block, name_data_map, gensvg_output, locale):
+def process(block, name_data_map, gensvg_output, locale, adobe_perl_scripts):
     # print(name_data_map["u8e39"])
 
     prefix = block["prefix"]
@@ -134,7 +127,7 @@ def process(block, name_data_map, gensvg_output, locale):
                         canonical_name = canonical_name_map[f"{_hex}-{_locale}"]
                         # and the alias is within the same locale or is otherwise
                         # bound to be assigned a unicode code
-                        if re.search(f"u[a-f0-9]+(-[{locale}])?\Z", canonical_name):
+                        if re.search(f"u[a-f0-9]+(-[{locale}])\Z", canonical_name):
                             characters_to_encode.add(canonical_name)
                         else:
                             # going to assign it a cid, but no corresponding unicode cp,
@@ -148,7 +141,7 @@ def process(block, name_data_map, gensvg_output, locale):
         end = int(last, 16)
         for i in range(begin, end + 1):
             _hex = format(i, "X")
-            _hex = f"u{_hex.lower()}"
+            _hex = f"u{_hex.lower().zfill(4)}"
 
             if f"{_hex}-{locale}" in name_data_map:
                 # cid_to_glyphwiki_name_map[j] = f"{_hex}-{locale}"
@@ -158,6 +151,10 @@ def process(block, name_data_map, gensvg_output, locale):
                 # cid_to_glyphwiki_name_map[j] = _hex
                 # j += 1
                 characters_to_encode.add(_hex)
+
+    for character in characters_to_encode:
+        if character in no_corresponding_unicode:
+            no_corresponding_unicode.remove(character)
 
     to_encode_list = list(characters_to_encode)
     no_corresponding_unicode_list = list(no_corresponding_unicode)
@@ -171,8 +168,8 @@ def process(block, name_data_map, gensvg_output, locale):
     to_encode_list.sort(key=functools.cmp_to_key(comparator))
     no_corresponding_unicode_list.sort(key=functools.cmp_to_key(comparator))
 
-    print(to_encode_list)
-    print(no_corresponding_unicode_list)
+    # print(to_encode_list)
+    # print(no_corresponding_unicode_list)
 
     glyphwiki_to_svg = {}
     # read the output of gensvg...
@@ -195,6 +192,20 @@ def process(block, name_data_map, gensvg_output, locale):
     generateCidMap(prefix, locale, to_encode_list, no_corresponding_unicode_list)
 
     generateCidInfo(prefix, full_name, locale)
+
+    generateCmap(prefix, locale, to_encode_list)
+
+    generateFeatures(
+        prefix,
+        locale,
+        to_encode_list,
+        no_corresponding_unicode_list,
+        canonical_name_map,
+    )
+    # postprocessing
+    generatePFADump(prefix, locale, adobe_perl_scripts)
+    generateRaw(prefix, locale, adobe_perl_scripts)
+    generateOTF(prefix, locale)
 
 
 def cli(args=None):
@@ -221,5 +232,11 @@ def cli(args=None):
     f.close()
 
     for block in config["blocks"]:
-        process(config["blocks"][block], name_data_map, args.gensvg_output, args.locale)
-        break
+        process(
+            config["blocks"][block],
+            name_data_map,
+            args.gensvg_output,
+            args.locale,
+            args.adobe_perl_scripts,
+        )
+        # break

@@ -2,3 +2,8 @@ rm *.pfa
 rm *.svg
 rm *.dump
 rm *.cid*
+rm *.features
+rm *.cmap
+rm *UTF*-H
+rm *.raw
+rm *.otf

@@ -1,5 +1,6 @@
 {
-  "family_name": "Hanazono Mincho Mod Lite",
+  "version": "1.000",
+  "family_name": "Hanazono Mincho Mod",
   "blocks": {
     "test": {
       "prefix": "HanaMinModLiteTest",
@@ -10,12 +11,30 @@
         ["2E5D9", "2E5D9"]
       ]
     },
-    "A": {
-      "prefix": "HanaMinModLiteA",
-      "full_name": "Hanazono Mincho Mod Lite A",
+    "A1": {
+      "prefix": "HanaMinModLiteA1",
+      "full_name": "Hanazono Mincho Mod Lite A1",
+      "unicode_ranges": [["0000", "C000"]]
+    },
+    "A2": {
+      "prefix": "HanaMinModLiteA2",
+      "full_name": "Hanazono Mincho Mod Lite A2",
       "unicode_ranges": [
-        ["0000", "D7FF"],
+        ["C001", "D7FF"],
         ["E000", "FFFD"]
+      ]
+    },
+    "B": {
+      "prefix": "HanaMinModLiteB",
+      "full_name": "Hanazono Mincho Mod Lite B",
+      "unicode_ranges": [["20000", "2A6D6"]]
+    },
+    "C": {
+      "prefix": "HanaMinModLiteC",
+      "full_name": "Hanazono Mincho Mod Lite C",
+      "unicode_ranges": [
+        ["2A700", "2FFFD"],
+        ["30000", "3134F"]
       ]
     }
   }

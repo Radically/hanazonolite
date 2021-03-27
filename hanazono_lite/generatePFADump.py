@@ -13,6 +13,6 @@ def generatePFADump(prefix, locale, adobe_perl_scripts):
 
     subprocess.run(["tx", "-dump", f"{font_family}.pfa", f"{font_family}.dump"])
     subprocess.run(
-        f"{adobe_perl_scripts}/cmap-tool.pl < {font_family}.cmap > {font_family}.optim.cmap",
+        f"perl {adobe_perl_scripts}/cmap-tool.pl < {font_family}.cmap > {font_family}.optim.cmap",
         shell=True,
     )

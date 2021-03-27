@@ -18,13 +18,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodule: recursive
+          submodules: recursive
       - run: sudo apt install wget
       - name: Set up Python 3.9.x
         uses: actions/setup-python@v2
         with:
           python-version: 3.9.x
-
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.32"
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.1
 
@@ -50,30 +52,31 @@ jobs:
       - run: sh fetch_svg_font.sh
 
       - run: gzip -d *.txt.gz
+      - run: shopt -s extglob
+      - run: sh clean.sh || exit 0
       - name: Mincho SC
         run: |
-          sh clean.sh
           CONFIG=./config_mincho_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts g
           zip HanaMinLiteSC.zip {Hana*.!(otf),GlyphWiki*}
           rm {Hana*.!(otf),GlyphWiki*}
 
+      - run: sh clean.sh || exit 0
       - name: Mincho TC CJK
         run: |
-          sh clean.sh
           CONFIG=./config_mincho.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts t
           zip HanaMinLiteCJKTC.zip {Hana*.!(otf),GlyphWiki*}
           rm {Hana*.!(otf),GlyphWiki*}
 
+      - run: sh clean.sh || exit 0
       - name: Gothic JP
         run: |
-          sh clean.sh
           CONFIG=./config_gothic_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts j
           zip HanaGothLiteJP.zip {Hana*.!(otf),GlyphWiki*}
           rm {Hana*.!(otf),GlyphWiki*}
 
+      - run: sh clean.sh || exit 0
       - name: Gothic KR CJK
         run: |
-          sh clean.sh
           CONFIG=./config_gothic.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts t
           zip HanaGothLiteCJKKR.zip {Hana*.!(otf),GlyphWiki*}
           rm {Hana*.!(otf),GlyphWiki*}

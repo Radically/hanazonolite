@@ -5,7 +5,7 @@
   "family_name": "Hanazono Gothic Lite",
   "blocks": {
     "test": {
-      "prefix": "HanaGothLite Test",
+      "prefix": "HanaGothLiteTest",
       "full_name": "Hanazono Gothic Lite Test",
       "unicode_ranges": [
         ["89D0", "89D9"],
@@ -14,12 +14,12 @@
       ]
     },
     "A1": {
-      "prefix": "HanaGothLite A1",
+      "prefix": "HanaGothLiteA1",
       "full_name": "Hanazono Gothic Lite A1",
       "unicode_ranges": [["0000", "ABFF"]]
     },
     "A2": {
-      "prefix": "HanaGothLite A2",
+      "prefix": "HanaGothLiteA2",
       "full_name": "Hanazono Gothic Lite A2",
       "unicode_ranges": [
         ["AC00", "D7FF"],
@@ -28,12 +28,12 @@
       ]
     },
     "B": {
-      "prefix": "HanaGothLite B",
+      "prefix": "HanaGothLiteB",
       "full_name": "Hanazono Gothic Lite B",
       "unicode_ranges": [["20000", "2A6D6"]]
     },
     "C": {
-      "prefix": "HanaGothLite C",
+      "prefix": "HanaGothLiteC",
       "full_name": "Hanazono Gothic Lite C",
       "unicode_ranges": [
         ["2A700", "2FFFD"],

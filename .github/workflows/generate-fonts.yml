@@ -52,34 +52,37 @@ jobs:
       - run: sh fetch_svg_font.sh
 
       - run: gzip -d *.txt.gz
-      - run: shopt -s extglob
-      - run: sh clean.sh || exit 0
+      # - run: sh clean.sh || exit 0
       - name: Mincho SC
         run: |
           CONFIG=./config_mincho_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts g
-          zip HanaMinLiteSC.zip {Hana*.!(otf),GlyphWiki*}
-          rm {Hana*.!(otf),GlyphWiki*}
+          shopt -s extglob
+          zip HanaMinLiteSC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
+          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
 
-      - run: sh clean.sh || exit 0
+      # - run: sh clean.sh || exit 0
       - name: Mincho TC CJK
         run: |
           CONFIG=./config_mincho.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts t
-          zip HanaMinLiteCJKTC.zip {Hana*.!(otf),GlyphWiki*}
-          rm {Hana*.!(otf),GlyphWiki*}
+          shopt -s extglob
+          zip HanaMinLiteCJKTC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
+          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
 
-      - run: sh clean.sh || exit 0
+      # - run: sh clean.sh || exit 0
       - name: Gothic JP
         run: |
           CONFIG=./config_gothic_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts j
-          zip HanaGothLiteJP.zip {Hana*.!(otf),GlyphWiki*}
-          rm {Hana*.!(otf),GlyphWiki*}
+          shopt -s extglob
+          zip HanaGothLiteJP.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
+          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
 
-      - run: sh clean.sh || exit 0
+      # - run: sh clean.sh || exit 0
       - name: Gothic KR CJK
         run: |
           CONFIG=./config_gothic.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts t
-          zip HanaGothLiteCJKKR.zip {Hana*.!(otf),GlyphWiki*}
-          rm {Hana*.!(otf),GlyphWiki*}
+          shopt -s extglob
+          zip HanaGothLiteCJKKR.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
+          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
 
       - name: Release
         uses: softprops/action-gh-release@v1

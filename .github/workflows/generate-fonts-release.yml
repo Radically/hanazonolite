@@ -9,15 +9,52 @@ on:
       - "release-*"
 
 jobs:
-  build:
+  fetch_dump_and_svg_font:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt install wget
+      - run: sh fetch_dump.sh
+      - run: sh fetch_svg_font.sh
+      - run: gzip -d *.txt.gz
+      - uses: actions/upload-artifact@master
+        with:
+          name: raw-data
+          path: |
+            ./glyphwiki_*.txt
+            ./glyphwiki_dump/
+
+  build-mincho-sc:
+    needs: ["fetch_dump_and_svg_font"]
     runs-on: ubuntu-latest
     continue-on-error: true
+    env:
+      TEST_RUN: true
 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suffix: SC
+            locale: g
+          - suffix: TC
+            locale: t
+          - suffix: HK
+            locale: h
+          - suffix: JP
+            locale: j
+          - suffix: KR
+            locale: k
+          - suffix: VN
+            locale: v
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - run: sudo apt install wget
+      - uses: actions/download-artifact@v2
+        with:
+          name: raw-data
+      # - run: sudo apt install wget
       - name: Set up Python 3.9.x
         uses: actions/setup-python@v2
         with:
@@ -46,179 +83,38 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - run: sh fetch_dump.sh
-      - run: sh fetch_svg_font.sh
+      # - run: sh fetch_dump.sh
+      # - run: sh fetch_svg_font.sh
 
-      - run: gzip -d *.txt.gz
+      # - run: gzip -d *.txt.gz
 
-      - name: Mincho SC
+      - name: Mincho ${{ matrix.suffix }}
         run: |
-          CONFIG=./config_mincho_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts g
+          CONFIG=./config_mincho_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts ${{ matrix.locale }}
           shopt -s extglob
-          zip HanaMinLiteSC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
+          zip HanaMinLite${{ matrix.suffix }}.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
           rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
 
-      - name: Mincho CJK SC
+      - name: Mincho CJK ${{ matrix.suffix }}
         run: |
-          CONFIG=./config_mincho.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts g
+          CONFIG=./config_mincho.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts ${{ matrix.locale }}
           shopt -s extglob
-          zip HanaMinLiteCJKSC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
+          zip HanaMinLiteCJK${{ matrix.suffix }}.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
           rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
 
-      - name: Gothic SC
+      - name: Gothic ${{ matrix.suffix }}
         run: |
-          CONFIG=./config_gothic_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts g
+          CONFIG=./config_gothic_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts ${{ matrix.locale }}
           shopt -s extglob
-          zip HanaGothLiteSC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
+          zip HanaGothLite${{ matrix.suffix }}.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
           rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
 
-      - name: Gothic CJK SC
+      - name: Gothic CJK ${{ matrix.suffix }}
         run: |
-          CONFIG=./config_gothic.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts g
+          CONFIG=./config_gothic.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts ${{ matrix.locale }}
           shopt -s extglob
-          zip HanaGothLiteCJKSC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
+          zip HanaGothLiteCJK${{ matrix.suffix }}.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
           rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho TC
-        run: |
-          CONFIG=./config_mincho_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts t
-          shopt -s extglob
-          zip HanaMinLiteTC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho CJK TC
-        run: |
-          CONFIG=./config_mincho.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts t
-          shopt -s extglob
-          zip HanaMinLiteCJKTC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic TC
-        run: |
-          CONFIG=./config_gothic_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts t
-          shopt -s extglob
-          zip HanaGothLiteTC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic CJK TC
-        run: |
-          CONFIG=./config_gothic.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts t
-          shopt -s extglob
-          zip HanaGothLiteCJKTC.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho HK
-        run: |
-          CONFIG=./config_mincho_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts h
-          shopt -s extglob
-          zip HanaMinLiteHK.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho CJK HK
-        run: |
-          CONFIG=./config_mincho.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts h
-          shopt -s extglob
-          zip HanaMinLiteCJKHK.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic HK
-        run: |
-          CONFIG=./config_gothic_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts h
-          shopt -s extglob
-          zip HanaGothLiteHK.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic CJK HK
-        run: |
-          CONFIG=./config_gothic.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts h
-          shopt -s extglob
-          zip HanaGothLiteCJKHK.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho JP
-        run: |
-          CONFIG=./config_mincho_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts j
-          shopt -s extglob
-          zip HanaMinLiteJP.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho CJK JP
-        run: |
-          CONFIG=./config_mincho.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts j
-          shopt -s extglob
-          zip HanaMinLiteCJKJP.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic JP
-        run: |
-          CONFIG=./config_gothic_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts j
-          shopt -s extglob
-          zip HanaGothLiteJP.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic CJK JP
-        run: |
-          CONFIG=./config_gothic.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts j
-          shopt -s extglob
-          zip HanaGothLiteCJKJP.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho KR
-        run: |
-          CONFIG=./config_mincho_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts k
-          shopt -s extglob
-          zip HanaMinLiteKR.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho CJK KR
-        run: |
-          CONFIG=./config_mincho.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts k
-          shopt -s extglob
-          zip HanaMinLiteCJKKR.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic KR
-        run: |
-          CONFIG=./config_gothic_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts k
-          shopt -s extglob
-          zip HanaGothLiteKR.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic CJK KR
-        run: |
-          CONFIG=./config_gothic.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts k
-          shopt -s extglob
-          zip HanaGothLiteCJKKR.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho VN
-        run: |
-          CONFIG=./config_mincho_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts v
-          shopt -s extglob
-          zip HanaMinLiteVN.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Mincho CJK VN
-        run: |
-          CONFIG=./config_mincho.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_mincho.txt ./perl-scripts v
-          shopt -s extglob
-          zip HanaMinLiteCJKVN.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic VN
-        run: |
-          CONFIG=./config_gothic_single.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts v
-          shopt -s extglob
-          zip HanaGothLiteVN.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
-      - name: Gothic CJK VN
-        run: |
-          CONFIG=./config_gothic.json poetry run driver ./glyphwiki_dump/dump_newest_only.txt ./glyphwiki_gothic.txt ./perl-scripts v
-          shopt -s extglob
-          zip HanaGothLiteCJKVN.zip {Hana*.!(*@(otf|zip)),GlyphWiki*}
-          rm {Hana*.!(*@(otf|zip)),GlyphWiki*}
-
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')

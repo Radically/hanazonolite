@@ -1,4 +1,4 @@
-from hanaminmod_lite import __version__
+from hanazono_lite import __version__
 
 
 def test_version():

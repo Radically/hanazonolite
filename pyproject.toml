@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "hanaminmod-lite"
+name = "hanazono-lite"
 version = "0.1.0"
 description = ""
 authors = ["Bryan Kok <bryan.wyern1@gmail.com>"]
@@ -12,7 +12,7 @@ afdko = "^3.6.2"
 pytest = "^5.2"
 
 [tool.poetry.scripts]
-driver = "hanaminmod_lite.driver:cli"
+driver = "hanazono_lite.driver:cli"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

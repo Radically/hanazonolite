@@ -1,8 +1,10 @@
 import argparse
 import json
+import os
 import re
 import functools
 
+from .config import Config
 from .constants import *
 from .generateCmap import generateCmap
 from .generateFeatures import generateFeatures
@@ -84,9 +86,7 @@ def generateCidMap(prefix, locale, to_encode_list, no_corresponding_unicode_list
 
 def generateCidInfo(prefix, full_name, locale):
     # Hanazono Mincho A Regular
-    with open("./config.json") as f:
-        config = json.load(f)
-    f.close()
+    config = Config.getInstance()
 
     font_family = f"{prefix}{LOCALES[locale]['suffix']}"
     f = open(f"{font_family}.cidinfo", "w")
@@ -144,6 +144,10 @@ def process(block, name_data_map, gensvg_output, locale, adobe_perl_scripts):
             _hex = f"u{_hex.lower().zfill(4)}"
 
             if f"{_hex}-{locale}" in name_data_map:
+                # special case https://glyphwiki.org/wiki/Talk:u8c6c-k
+                if f"{_hex}-{locale}" == "u8c6c-k":
+                    characters_to_encode.add("u8c6c")
+                    continue
                 # cid_to_glyphwiki_name_map[j] = f"{_hex}-{locale}"
                 # j += 1
                 characters_to_encode.add(f"{_hex}-{locale}")
@@ -157,7 +161,10 @@ def process(block, name_data_map, gensvg_output, locale, adobe_perl_scripts):
             no_corresponding_unicode.remove(character)
 
     to_encode_list = list(characters_to_encode)
-    no_corresponding_unicode_list = list(no_corresponding_unicode)
+    config = Config.getInstance()
+    no_corresponding_unicode_list = (
+        list(no_corresponding_unicode) if config["cjk"] else []
+    )
 
     def comparator(x, y):
         # u89d4-j => 29224
@@ -195,13 +202,15 @@ def process(block, name_data_map, gensvg_output, locale, adobe_perl_scripts):
 
     generateCmap(prefix, locale, to_encode_list)
 
-    generateFeatures(
-        prefix,
-        locale,
-        to_encode_list,
-        no_corresponding_unicode_list,
-        canonical_name_map,
-    )
+    if config["cjk"]:
+        generateFeatures(
+            prefix,
+            locale,
+            to_encode_list,
+            no_corresponding_unicode_list,
+            canonical_name_map,
+        )
+
     # postprocessing
     generatePFADump(prefix, locale, adobe_perl_scripts)
     generateRaw(prefix, locale, adobe_perl_scripts)
@@ -212,9 +221,7 @@ def cli(args=None):
     args = parser.parse_args()
 
     # print(args.dump_newest_only)
-    with open("./config.json") as f:
-        config = json.load(f)
-    f.close()
+    config = Config.getInstance()
 
     name_data_map = {}
     i = 0
@@ -239,4 +246,6 @@ def cli(args=None):
             args.locale,
             args.adobe_perl_scripts,
         )
-        # break
+
+        if "TEST_RUN" in os.environ:
+            break

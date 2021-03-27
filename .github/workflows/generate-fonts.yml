@@ -11,8 +11,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    continue-on-error: true
     env:
-      DAY_OF_WEEK: Mon
+      TEST_RUN: true
 
     steps:
       - uses: actions/checkout@v2
@@ -46,8 +47,8 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
 
       - run: sh fetch_dump.sh
-      - run: >
-        wget `curl -s https://api.github.com/repos/Radically/glyphwiki-gensvg/releases/latest | python3 -c "import sys, json; print('\n'.join(list(map(lambda x: x['browser_download_url'],  json.load(sys.stdin)['assets']))))"`
+      - run: sh fetch_svg_font.sh
+
       - run: gzip -d *.txt.gz
       - name: Mincho SC
         run: |

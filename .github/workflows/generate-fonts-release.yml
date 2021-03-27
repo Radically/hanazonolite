@@ -9,27 +9,25 @@ on:
       - "release-*"
 
 jobs:
-  fetch_dump_and_svg_font:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: sudo apt install wget
-      - run: sh fetch_dump.sh
-      - run: sh fetch_svg_font.sh
-      - run: gzip -d *.txt.gz
-      - uses: actions/upload-artifact@master
-        with:
-          name: raw-data
-          path: |
-            ./glyphwiki_*.txt
-            ./glyphwiki_dump/
+  # fetch_dump_and_svg_font:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - run: sudo apt install wget
+  #     - run: sh fetch_dump.sh
+  #     - run: sh fetch_svg_font.sh
+  #     - run: gzip -d *.txt.gz
+  #     - uses: actions/upload-artifact@master
+  #       with:
+  #         name: raw-data
+  #         path: |
+  #           ./glyphwiki_*.txt
+  #           ./glyphwiki_dump/
 
   build-mincho-sc:
-    needs: ["fetch_dump_and_svg_font"]
+    # needs: ["fetch_dump_and_svg_font"]
     runs-on: ubuntu-latest
     continue-on-error: true
-    env:
-      TEST_RUN: true
 
     strategy:
       fail-fast: false
@@ -51,10 +49,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - uses: actions/download-artifact@v2
-        with:
-          name: raw-data
-      # - run: sudo apt install wget
+      # - uses: actions/download-artifact@v2
+      #   with:
+      #     name: raw-data
+      - run: sudo apt install wget
       - name: Set up Python 3.9.x
         uses: actions/setup-python@v2
         with:
@@ -83,10 +81,9 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      # - run: sh fetch_dump.sh
-      # - run: sh fetch_svg_font.sh
-
-      # - run: gzip -d *.txt.gz
+      - run: sh fetch_dump.sh
+      - run: sh fetch_svg_font.sh
+      - run: gzip -d *.txt.gz
 
       - name: Mincho ${{ matrix.suffix }}
         run: |

@@ -24,7 +24,7 @@ jobs:
   #           ./glyphwiki_*.txt
   #           ./glyphwiki_dump/
 
-  build-mincho-sc:
+  build-otf:
     # needs: ["fetch_dump_and_svg_font"]
     runs-on: ubuntu-latest
     continue-on-error: true

@@ -1,7 +1,7 @@
 {
   "hinted": false,
   "cjk": false,
-  "version": "1.000",
+  "version": "1.001",
   "family_name": "Hanazono Mincho Lite",
   "blocks": {
     "test": {
@@ -13,29 +13,21 @@
         ["2E5D9", "2E5D9"]
       ]
     },
-    "A1": {
-      "prefix": "HanaMinLiteA1",
-      "full_name": "Hanazono Mincho Lite A1",
-      "unicode_ranges": [["0000", "ABFF"]]
-    },
-    "A2": {
-      "prefix": "HanaMinLiteA2",
-      "full_name": "Hanazono Mincho Lite A2",
+    "A": {
+      "prefix": "HanaMinLiteA",
+      "full_name": "Hanazono Mincho Lite A",
       "unicode_ranges": [
-        ["AC00", "D7FF"],
-        ["E000", "FFFD"],
-        ["16FE0", "1FBFF"]
+        ["0000", "D7FF"],
+        ["F900", "FFFD"],
+        ["16F00", "1FBFF"],
+        ["20000", "215FF"]
       ]
     },
     "B": {
       "prefix": "HanaMinLiteB",
       "full_name": "Hanazono Mincho Lite B",
-      "unicode_ranges": [["20000", "2A6D6"]]
-    },
-    "C": {
-      "prefix": "HanaMinLiteC",
-      "full_name": "Hanazono Mincho Lite C",
       "unicode_ranges": [
+        ["21600", "2A6D6"],
         ["2A700", "2FFFD"],
         ["30000", "3134F"]
       ]

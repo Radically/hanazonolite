@@ -58,7 +58,7 @@ def generateSVGFont(
     f = open(f"{font_family}.svg", "w")
     f.write(
         f"""<font horiz-adv-x="1000">
-<font-face font-family="{font_family}" units-per-em="1000" ascent="1000" descent="0"/>
+<font-face font-family="{font_family}" units-per-em="1000" ascent="880" descent="120"/>
 <missing-glyph />
 """
     )

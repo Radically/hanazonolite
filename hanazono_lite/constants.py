@@ -45,8 +45,8 @@ _FEATURES_FOOTER_TEMPLATE = """table head {{
 }} head;
 
 table OS/2 {{
-  TypoAscender 1000;
-  TypoDescender 0;
+  TypoAscender 880;
+  TypoDescender -120;
   TypoLineGap 0;
   WeightClass 300;
   WidthClass 5;
@@ -66,6 +66,12 @@ table name {{
       nameid 14 "http://glyphwiki.org/license.html";
       nameid 14 3 1 0x411 "http://glyphwiki.org/license.html";
 }} name;
+
+table hhea {{
+  Ascender 880;
+  Descender -120;
+  LineGap 0;
+}} hhea;
 
 table vhea {{
   VertTypoLineGap 500;

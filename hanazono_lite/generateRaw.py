@@ -18,6 +18,21 @@ def generateRaw(prefix, locale, adobe_perl_scripts):
         ]
     )
 
+    # seems to be ineffective, keeping here for future reference
+    # restore ascent details
+    # subprocess.run(
+    #     f"""sed "s/FontInfo 7 dict dup begin/FontInfo 7 dict dup begin\\n\/ascent 100 def/g" {font_family}.raw > {font_family}.tmp.raw""",
+    #     shell=True,
+    # )
+
+    # shift glyphs downward
+    subprocess.run(
+        f"rotatefont -t1 -matrix 1 0 0 1.1 0 -150 {font_family}.raw > {font_family}.tmp.raw",
+        shell=True,
+    )
+
+    subprocess.run(["mv", f"{font_family}.tmp.raw", f"{font_family}.raw"])
+
     if config["hinted"]:
         subprocess.run(
             # /BlueValues [-250 -250 1100 1100] def

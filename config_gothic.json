@@ -1,7 +1,7 @@
 {
   "hinted": false,
   "cjk": true,
-  "version": "1.000",
+  "version": "1.001",
   "family_name": "Hanazono Gothic Lite",
   "blocks": {
     "test": {
@@ -23,8 +23,8 @@
       "full_name": "Hanazono Gothic Lite CJK A2",
       "unicode_ranges": [
         ["AC00", "D7FF"],
-        ["E000", "FFFD"],
-        ["16FE0", "1FBFF"]
+        ["F900", "FFFD"],
+        ["16F00", "1FBFF"]
       ]
     },
     "B": {

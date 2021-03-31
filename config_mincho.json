@@ -30,7 +30,9 @@
         ["FE30", "FE6F"],
         ["FF00", "FFEF"],
         ["11FB0", "11FBF"],
-        ["16F00", "1B2FF"],
+        ["16F00", "16FFF"],
+        ["18B00", "18CFF"],
+        ["1B000", "1B2FF"],
         ["1D300", "1D37F"],
         ["1F000", "1F02F"],
         ["1F200", "1F5FF"],
@@ -40,12 +42,16 @@
     "B": {
       "prefix": "HanaMinLiteCJKB",
       "full_name": "Hanazono Mincho Lite CJK B",
-      "unicode_ranges": [["20000", "2CEAF"]]
+      "unicode_ranges": [
+        ["17000", "18AFF"],
+        ["18D00", "18D8F"],
+        ["20000", "2B81F"]
+      ]
     },
     "C": {
       "prefix": "HanaMinLiteCJKC",
       "full_name": "Hanazono Mincho Lite CJK C",
-      "unicode_ranges": [["2CEB0", "3134F"]]
+      "unicode_ranges": [["2B820", "3134F"]]
     },
     "D": {
       "prefix": "HanaMinLiteCJKD",

@@ -8,36 +8,67 @@
       "prefix": "HanaGothLiteCJKTest",
       "full_name": "Hanazono Gothic Lite CJK Test",
       "unicode_ranges": [
+        ["7DE8", "7DE8"],
         ["89D0", "89D9"],
         ["9AA8", "9AA9"],
         ["2E5D9", "2E5D9"]
       ]
     },
-    "A1": {
-      "prefix": "HanaGothLiteCJKA1",
-      "full_name": "Hanazono Gothic Lite CJK A1",
-      "unicode_ranges": [["0000", "ABFF"]]
-    },
-    "A2": {
-      "prefix": "HanaGothLiteCJKA2",
-      "full_name": "Hanazono Gothic Lite CJK A2",
+    "A": {
+      "prefix": "HanaGothLiteCJKA",
+      "full_name": "Hanazono Gothic Lite CJK A",
       "unicode_ranges": [
+        ["02B0", "02FF"],
+        ["1100", "11FF"],
+        ["2E80", "A4FF"],
+        ["A700", "A71F"],
+        ["A840", "A87F"],
+        ["A960", "A97F"],
         ["AC00", "D7FF"],
-        ["F900", "FFFD"],
-        ["16F00", "1FBFF"]
+        ["F900", "FAFF"],
+        ["FE10", "FE1F"],
+        ["FE30", "FE6F"],
+        ["FF00", "FFEF"],
+        ["11FB0", "11FBF"],
+        ["16F00", "1B2FF"],
+        ["1D300", "1D37F"],
+        ["1F000", "1F02F"],
+        ["1F200", "1F5FF"],
+        ["1F680", "1F6FF"]
       ]
     },
     "B": {
       "prefix": "HanaGothLiteCJKB",
       "full_name": "Hanazono Gothic Lite CJK B",
-      "unicode_ranges": [["20000", "2A6D6"]]
+      "unicode_ranges": [["20000", "2CEAF"]]
     },
     "C": {
       "prefix": "HanaGothLiteCJKC",
       "full_name": "Hanazono Gothic Lite CJK C",
+      "unicode_ranges": [["2CEB0", "3134F"]]
+    },
+    "D": {
+      "prefix": "HanaGothLiteCJKD",
+      "full_name": "Hanazono Gothic Lite CJK D",
       "unicode_ranges": [
-        ["2A700", "2FFFD"],
-        ["30000", "3134F"]
+        ["0000", "02AF"],
+        ["0300", "10FF"],
+        ["1200", "2E7F"],
+        ["A500", "A6FF"],
+        ["A720", "A83F"],
+        ["A880", "A95F"],
+        ["A980", "ABFF"],
+        ["FB00", "FDFF"],
+        ["FE20", "FE2F"],
+        ["FE70", "FEFF"],
+        ["FFF0", "11EFF"],
+        ["11FC0", "16E9F"],
+        ["1BC00", "1BC9F"],
+        ["1D000", "1D2FF"],
+        ["1D400", "1EEFF"],
+        ["1F030", "1F1FF"],
+        ["1F600", "1F67F"],
+        ["1F700", "1FBFF"]
       ]
     }
   }

@@ -53,14 +53,23 @@ def generateFeatures(
                     (glyphwiki_to_cid[glyphwiki_code], glyphwiki_to_cid[resolved])
                 )
 
-    f.write("feature locl {\n")
+    # is the locl table NOT going to be empty?
+    has_locales = False
     for _locale in LOCALES:
         if _locale != locale and len(substitution_rules[_locale]):
-            f.write(f"""  script hani;\n  language {LOCALES[_locale]["tla"]};\n""")
+            has_locales = True
+            break
 
-            for (_from, _to) in substitution_rules[_locale]:
-                f.write(f"""    substitute \{_from} by \{_to};\n""")
+    if has_locales:
+        f.write("feature locl {\n")
+        for _locale in LOCALES:
+            if _locale != locale and len(substitution_rules[_locale]):
+                f.write(f"""  script hani;\n  language {LOCALES[_locale]["tla"]};\n""")
 
-    f.write("} locl;\n")
+                for (_from, _to) in substitution_rules[_locale]:
+                    f.write(f"""    substitute \{_from} by \{_to};\n""")
+
+        f.write("} locl;\n")
+
     f.write(FEATURES_FOOTER_TEMPLATE())
     f.close()
